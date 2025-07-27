@@ -1,5 +1,5 @@
 from google.adk.agents import Agent
-from .sub_agents import ToneAgent, GrammarAgent
+from .sub_agents import ToneAgent, GrammarAgent, ReadabilityAgent, RedundancyAgent, ExpansionAgent
 DelegateAgent= Agent(
             name="DelegateAgent",
             model="gemini-2.0-flash",
@@ -24,7 +24,10 @@ DelegateAgent= Agent(
                       Analyze the `user_query` to decide the user's goal.:
                      - If the goal is to fix grammar, spelling, or punctuation, you will use the `GrammarAgent`.
                      - If the goal is to change the tone, style, or emotion, you will use the `ToneAgent`.
-                             
+                     - If the goal is to expand the content meaningfully without changing its intent, you will use the `ExpansionAgent`.
+                     - If the goal is to improve overall readability (e.g., simplify complex sentences, reduce jargon), you will use the `ReadabilityAgent`.
+                     - If the goal is to remove redundant or repetitive content, you will use the `RedundancyAgent`.
+                     
                    2.  Extract Text for Editing: You must extract the plain text that the sub-agent will work on.
                      - If `userSelectedText` is provided, use that.
                      - If `userSelectedText` is empty, use the text content inside the `original_text` field.
@@ -51,7 +54,7 @@ DelegateAgent= Agent(
                    If you cannot determine the user's intent, respond with a clarification request using the same JSON format, with a status of "failed".
   
             """,
-            sub_agents=[GrammarAgent, ToneAgent],
+            sub_agents=[GrammarAgent, ToneAgent, ReadabilityAgent, RedundancyAgent, ExpansionAgent],
             output_key="DelegateResponse",
         )
 

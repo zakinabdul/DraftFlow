@@ -191,12 +191,13 @@ if (textEditor && charCounter) {
 }
 
 // Generate button functionality
+// Generate button functionality
 if (generateBtn) {
   generateBtn.addEventListener("click", async function () {
-    //if (isGenerating) return;
+    // Prevent multiple clicks during generation
+    if (isGenerating) return;
 
     const userText = textEditor ? textEditor.value.trim() : "";
-
 
     if (!userText) {
       showStatus("Please enter some text to transform!", "error");
@@ -204,17 +205,14 @@ if (generateBtn) {
       return;
     }
 
+    // Use the proper loading state function
     setLoadingState(true);
+    
     const requestData = { query: userText };
+    
     try {
-      // Simulate realistic delay
-      await new Promise((resolve) =>
-        setTimeout(resolve, 2000 + Math.random() * 2000)
-      );
-
-      console.log('Sending data:', requestData); // Debug log
-      console.log('JSON string:', JSON.stringify(requestData)); // Debug the JSON
-
+      console.log('Sending data:', requestData);
+      console.log('JSON string:', JSON.stringify(requestData));
 
       const response = await fetch('/adk/format', {
         method: 'POST',
@@ -231,16 +229,19 @@ if (generateBtn) {
 
       const data = await response.json();
       localStorage.setItem('Response', data.response_text);
-      showStatus("Text transformed successfully! ✨", "success");
+      
+      // Check response success and redirect
       window.location.replace('/editor');
+      
     } catch (error) {
-      showStatus("Something went wrong. Please try again.", "error");
       console.error('Error:', error.message);
+      showStatus("Something went wrong. Please try again.", "error");
     } finally {
+      // Always reset loading state
       setLoadingState(false);
     }
-  })
-};
+  });
+}
 // Clear button functionality
 if (clearBtn) {
   clearBtn.addEventListener("click", function () {
@@ -305,27 +306,64 @@ document.addEventListener("keydown", function (e) {
     closeProfileDropdown();
   }
 });
-
-// Utility Functions
 function setLoadingState(loading) {
   isGenerating = loading;
+  const loaderContainer = document.querySelector('.loader-container');
+  const statusText = document.querySelector('.status-text');
+  const appContainer = document.querySelector('.app-container');
+  
   if (generateBtn) generateBtn.classList.toggle("loading", loading);
 
-  if (loading && buttonText) {
-    buttonText.innerHTML = `
-      <span>Transforming</span>
-      <div class="typing-indicator">
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-      </div>
-    `;
-    generateBtn.style.pointerEvents = "none";
-  } else if (buttonText) {
-    buttonText.textContent = "Transform Text";
-    if (generateBtn) generateBtn.style.pointerEvents = "";
+  if (loading) {
+    // Show the cube loader
+    if (loaderContainer) {
+      loaderContainer.style.display = 'flex';
+    }
+    
+    // Hide the main app container
+    if (appContainer) {
+      appContainer.style.display = 'none';
+    }
+    
+    // Show status text
+    if (statusText) {
+      statusText.style.display = 'block';
+      statusText.textContent = 'TRANSFORMING TEXT';
+    }
+    
+    // Update button text and disable it
+    if (buttonText) {
+      buttonText.textContent = "Processing...";
+    }
+    if (generateBtn) {
+      generateBtn.style.pointerEvents = "none";
+    }
+  } else {
+    // Hide the cube loader
+    if (loaderContainer) {
+      loaderContainer.style.display = 'none';
+    }
+    
+    // Show the main app container
+    if (appContainer) {
+      appContainer.style.display = 'block';
+    }
+    
+    // Hide status text
+    if (statusText) {
+      statusText.style.display = 'none';
+    }
+    
+    // Reset button text and enable it
+    if (buttonText) {
+      buttonText.textContent = "Transform Text";
+    }
+    if (generateBtn) {
+      generateBtn.style.pointerEvents = "";
+    }
   }
 }
+// Utility Functions
 
 function transformText(text) {
   // Enhanced text transformation with multiple formatting improvements

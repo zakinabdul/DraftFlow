@@ -10,7 +10,7 @@ window.userSelectedText = '';// Stores the currently selected text for the subje
 //Get block-id using closest() method
 window.blockId = null;
 window.blockContent = null;
-
+window.enterKey = false;
 
 // ==========================================
 // DOM ELEMENT REFERENCES
@@ -411,6 +411,11 @@ const ChatModule = {
 
     const text = elements.messageInput.value.trim();
     if (!text) return;
+
+
+    // hide subject box
+    // Close subject box when sending a message
+    SubjectModule.hideSubjectBox();
 
     // Add user message
     this.addMessage(text, true);
@@ -882,6 +887,8 @@ const SubjectModule = {
       return;
     }
 
+    
+    
     // Use a single load handler to avoid conflicts
     iframe.addEventListener('load', () => {
       console.log('Iframe loaded, setting up listeners');
