@@ -1,9 +1,0 @@
-fastapi[all]==0.115.12
-google-adk==1.0.0
-litellm==1.70.2
-google-generativeai==0.8.5
-python-dotenv==1.1.0
-firebase-admin==6.8.0
-weasyprint==65.1
-bleach==6.2.0
-Deprecated==1.2.18

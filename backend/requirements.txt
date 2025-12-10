@@ -1,0 +1,9 @@
+fastapi[all]
+weasyprint==65.1
+bleach==6.2.0
+Deprecated==1.2.18
+langgraph 
+langchain-groq
+langchain
+pydantic
+python-dotenv
