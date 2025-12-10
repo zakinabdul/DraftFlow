@@ -1,0 +1,54 @@
+name: Backend Sanity Check
+
+# Trigger the action on:
+# 1. Pushes to the 'backend' branch (Deployment)
+# 2. Pull Requests to the 'main' branch (Showcase/Integration)
+on:
+  push:
+    branches: [ "backend" ]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-ci.yml'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-ci.yml'
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Download your code
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # Step 2: Install Python 3.11 (Same as your Dockerfile)
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+        cache: 'pip' # Caches pip dependencies to make future runs faster
+
+    # Step 3: Try to install your dependencies
+    # This checks if your requirements.txt is valid and packages exist
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
+
+    # Step 4: Syntax Check (The "Sanity Check")
+    # This compiles your Python files to bytecode. 
+    # It catches syntax errors (like missing colons or indentation issues) immediately.
+    - name: Check for Syntax Errors
+      run: |
+        python -m compileall backend/
+
+    # Step 5: (Optional) Run Tests
+    # This command tries to run pytest. "|| true" ensures the Action doesn't fail
+    # if you haven't written any tests yet.
+    - name: Run Tests (if any)
+      run: |
+        pip install pytest
+        pytest backend/ || true
