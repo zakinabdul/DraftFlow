@@ -3,7 +3,7 @@ services:
     build:
       context: ../..
       dockerfile: backend/.devcontainer/Dockerfile
-    image: attendance_backend:dev
+    image: draftflow_backend:dev
     restart: unless-stopped
     env_file: ../envs/.env
     ports:
