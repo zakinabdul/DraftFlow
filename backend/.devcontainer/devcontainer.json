@@ -8,7 +8,10 @@
     "remoteUser": "root",
     "shutdownAction": "stopCompose",
     "runServices": ["app"],
-
+    "containerEnv": {
+         "WAYLAND_DISPLAY": "",
+         "DISPLAY": ""
+    },
     "features": {
         "ghcr.io/devcontainers/features/common-utils:2": {
             "installZsh": true,
