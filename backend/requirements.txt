@@ -7,3 +7,6 @@ langchain-groq
 langchain
 pydantic
 python-dotenv
+sqlite-vec
+langsmith
+google-generativeai
