@@ -1,47 +1,36 @@
 # --- Stage 1: Builder ---
 FROM python:3.11-slim AS builder
-
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-WORKDIR /app
+WORKDIR /build
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Fix: Assuming requirements.txt is inside the backend folder
-COPY backend/requirements.txt .
-RUN pip install --no-cache-dir --user -r requirements.txt
+COPY requirements.txt .
+RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 
 # --- Stage 2: Final Runtime ---
 FROM python:3.11-slim
-
 WORKDIR /app
 
-# 1. Copy dependencies from builder
-COPY --from=builder /root/.local /home/appuser/.local
-COPY backend/ . 
+# 1. Copy dependencies
+COPY --from=builder /install /usr/local
 
-# 2. Setup Environment
-ENV PATH=/home/appuser/.local/bin:$PATH
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-# Tell Python to look in the appuser's local folder for packages
-ENV PYTHONPATH=/home/appuser/.local/lib/python3.11/site-packages
+# 2. Copy the contents of the 'backend' directory
+# This results in: /app/app/main.py
+COPY . .
 
+# 3. Environment & Security setup
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
-    && rm -rf /var/lib/apt/lists/* \
-    && useradd -m appuser
-
-# 3. Permissions fix: Ensure appuser owns their home directory and app files
-RUN chown -R appuser:appuser /home/appuser /app
+    && rm -rf /var/lib/apt/lists/* && \
+    useradd -m appuser && \
+    chown -R appuser:appuser /app
 
 USER appuser
 
-EXPOSE 8000
-
-# 4. Use dynamic Port for Render and ensure main:app is found
-CMD ["sh", "-c", "python -m uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 4"]
+# 4. THE FIX: The path is now 'app.main:app'
+# 'app' (folder) -> 'main' (file) -> 'app' (FastAPI variable)
+ENV PYTHONPATH=/app
+CMD ["sh", "-c", "python -m uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 4"]
