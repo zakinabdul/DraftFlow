@@ -10,3 +10,4 @@ python-dotenv
 sqlite-vec
 langsmith
 google-generativeai
+uvicorn
