@@ -13,9 +13,9 @@ WORKDIR /app
 # 1. Copy dependencies
 COPY --from=builder /install /usr/local
 
-# 2. Copy EVERYTHING from the backend folder
-# This copies the 'app/' folder into '/app/app/'
-COPY . .
+# 2. Copy ONLY the backend folder
+# This places the 'app/' folder directly under '/app/' so `import app` works
+COPY backend/ .
 
 # 3. Environment & Security
 # We set PYTHONPATH to /app so 'import app' works
