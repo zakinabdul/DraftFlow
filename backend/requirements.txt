@@ -9,5 +9,5 @@ pydantic
 python-dotenv
 sqlite-vec
 langsmith
-google-generativeai
+google-genai
 uvicorn

@@ -2,8 +2,15 @@ import sqlite3
 import sqlite_vec
 import struct
 import os
-# NEW IMPORT:
-from google import genai
+# NEW IMPORT: try genai (new package) then fallback to generativeai (deprecated package)
+try:
+    import google.genai as genai
+except Exception:
+    try:
+        import google.generativeai as genai
+    except Exception as e:
+        raise ImportError("Missing Google GenAI package: install 'google-genai' or 'google-generativeai'.") from e
+
 from typing import List
 from typing import List
 from dotenv import load_dotenv
