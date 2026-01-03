@@ -44,54 +44,57 @@ class AgentState(TypedDict):
     feedback: str          # Critique from the validator if rejected
     retry_count: int       # To prevent infinite loops
     last_error_source: str
+    merged_code: str
     
 # TODO: HTML formatting Agent
-
 html_agent_instruction = """
 
 You are the **Semantic HTML Architect** for a document generation pipeline.
-              Your goal is to convert raw text into a strictly structured, valid HTML5 document 
-              suitable for professional reports and articles.
-              ### CRITICAL RULES
-              1. **Semantic Hierarchy:** Analyze the text's flow to determine structure.
-                 - First significant line → `<h1>` (Main Title)
-                 - Major sections → `<h2>`
-                 - Subsections → `<h3>`
-                 - Body text → `<p>`
-                 - Lists → `<ul>`/`<ol>` with `<li>`
-              2. **Data Block IDs (Mandatory):** - Every single content element (h1-h6, p, li) must have a unique `data-block-id`.
-                 - Format: `block-1`, `block-2`, `block-3` (strictly sequential, no gaps).
-                 - Apply the ID directly to the tag (e.g., `<p data-block-id="block-4">`).
-              3. **Content Integrity:** Do NOT summarize, rewrite, or delete any text. Preserve the original wording exactly.
-              4. **Clean Output:** Return **ONLY** the raw HTML string. No markdown backticks (```), no CSS, no `<style>`, no conversational filler.
-              5. **Required HTML Structure:**
-                Return your code strictly following this pattern: <body><div class="page-container">---contents here--</div></body>."
-       
-              ###  MAPPING LOGIC
-              - **Emphasis:** Detect "Introduction", "Conclusion", or all-caps lines as headers.
-              - **Formatting:** Convert *text* to `<em>` and **text** to `<strong>` if detected, but prioritize block structure.
-       
-              ###  FEW-SHOT EXAMPLE
-              **Input:**
-              "Quarterly Report
-              Overview
-              Sales were up 20%.
-              - East Coast: Good
-              - West Coast: Bad"
-              
-              **Output:**
-              <!DOCTYPE html>
-              <html>
-              <body>
-                <h1 data-block-id="block-1">Quarterly Report</h1>
-                <h2 data-block-id="block-2">Overview</h2>
-                <p data-block-id="block-3">Sales were up 20%.</p>
-                <ul data-block-id="block-4">
-                  <li data-block-id="block-5">East Coast: Good</li>
-                  <li data-block-id="block-6">West Coast: Bad</li>
-                </ul>
-              </body>
-              </html>"""
+Your goal is to convert raw text into a strictly structured HTML5 fragment.
+
+### CRITICAL RULES
+
+1. **Attribute Formatting (Crucial):**
+   - You MUST use **SINGLE QUOTES** (') for all HTML attributes.
+   - CORRECT: <div class='page-container'>
+   - WRONG: <div class="page-container">
+   - This is required to prevent JSON escaping issues.
+
+2. **Required Structure:**
+   - Return **ONLY** the HTML string. Do not use markdown blocks or descriptive text.
+   - Your output must follow this exact pattern:
+     <body><div class='page-container'>{{CONTENT_HERE}}</div></body>
+
+3. **Semantic Hierarchy:**
+   - First significant line → <h1>
+   - Major sections → <h2>
+   - Subsections → <h3>
+   - Body text → <p>
+   - Lists → <ul>/<ol> with <li>
+
+4. **Data Block IDs (Mandatory):**
+   - Every single content element (h1-h6, p, li) must have a unique `data-block-id`.
+   - Format: `block-1`, `block-2` (strictly sequential).
+   - Example: <p data-block-id='block-4'>
+
+5. **Pure HTML Only:**
+   - **NO** <style> tags.
+   - **NO** <head> tags.
+   - **NO** <!DOCTYPE> declarations.
+   - **NO** CSS.
+
+### FEW-SHOT EXAMPLE
+
+**Input:**
+"Quarterly Report
+Overview
+Sales were up 20%.
+- East Coast: Good
+- West Coast: Bad"
+
+**Output:**
+<body><div class='page-container'><h1 data-block-id='block-1'>Quarterly Report</h1><h2 data-block-id='block-2'>Overview</h2><p data-block-id='block-3'>Sales were up 20%.</p><ul data-block-id='block-4'><li data-block-id='block-5'>East Coast: Good</li><li data-block-id='block-6'>West Coast: Bad</li></ul></div></body>
+"""
     
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder,SystemMessagePromptTemplate, HumanMessagePromptTemplate
@@ -287,7 +290,9 @@ You must return a **Single JSON Object** (no markdown formatting, no explanation
 }
 """
 
-import json
+
+# IMP: Currently Stopping usage of Validator for testing
+"""import json
 from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 
@@ -326,8 +331,8 @@ async def validator_node(state: AgentState):
         # We can also store 'error_source' to make the Router's job easier
         "last_error_source": result_json.get("error_source")
     }
-
-
+"""
+"""
 @traceable
 def should_continue(state: AgentState):
     # 1. Check if we are done
@@ -349,18 +354,50 @@ def should_continue(state: AgentState):
         # Default to HTML if it's a structural error or unknown
         return "html_format"
 
+"""
 
+#
+def merge_html_css(html_content: str, css_content: str) -> str:
+    """Merges CSS into HTML head safely."""
+    # Create the style block
+    style_block = f"<style>{css_content}</style>"
+    
+    # Scenario 1: <head> tag exists -> Inject inside
+    if "<head>" in html_content:
+        merged_html = html_content.replace("</head>", f"{style_block}</head>")
+        
+    # Scenario 2: <html> exists but NO <head> (Your example fits here)
+    elif "<html>" in html_content:
+        # Create a head tag and inject it right after <html> opens
+        merged_html = html_content.replace("<html>", f"<html><head>{style_block}</head>")
+        
+    # Scenario 3: Fragment only (No <html> or <body>)
+    else:
+        merged_html = f"<!DOCTYPE html><html><head>{style_block}</head><body>{html_content}</body></html>"
+        
+    return merged_html
+
+@traceable
+def merge_node(state: AgentState):
+    # removing \n from the response
+    html = state["html_code"].replace('\\"', '"').replace("\n", "")
+    css = state["css_code"].replace("\n", "")
+    result = merge_html_css(html_content=html, css_content=css)
+    return {
+        "merged_code": result
+    }
+    
 # LangGraph Building 
 builder = StateGraph(AgentState)
 builder.add_node("html_format", generate_html_node)
 builder.add_node("retrival_node", style_retrival_node)
 builder.add_node("css_format", css_agent_node)
-builder.add_node("validator", validator_node)
+builder.add_node("merger", merge_node)
 builder.add_edge(START, "html_format")
 builder.add_edge("html_format", "retrival_node")
 builder.add_edge("retrival_node", "css_format")
-builder.add_edge("css_format", "validator")
-builder.add_conditional_edges(
+builder.add_edge("css_format", "merger")
+"""builder.add_conditional_edges(
     "validator",          # (The Source Node)
     should_continue,      # Who decides? (The Function)
     
@@ -371,7 +408,7 @@ builder.add_conditional_edges(
         "css_format": "css_format"
     }
 )
-
+"""
 memory = InMemorySaver()
 app = builder.compile(checkpointer=memory)
 
@@ -393,15 +430,18 @@ async def format_graph(raw_text: str, user_query:str):
     print("🚀 Starting the Agent...")
     final_state = await app.ainvoke(initial_inputs, config=config) # type: ignore
 
-    # removing \n from the response
+    """# removing \n from the response
     final_state["html_code"] = final_state["html_code"].replace("\n", "")
-    final_state["css_code"] = final_state["css_code"].replace("\n", "")
+    final_state["css_code"] = final_state["css_code"].replace("\n", "")"""
     return {
+       "code": final_state['merged_code']
+    }
+    """return {
         "stat": final_state['validation_status'],
         "html": final_state['html_code'],
         "css" : final_state['css_code']  
     }
-
+"""
 """if __name__ == "__main__":
     import asyncio
     asyncio.run(format_graph())"""

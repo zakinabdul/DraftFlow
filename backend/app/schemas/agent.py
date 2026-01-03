@@ -5,6 +5,4 @@ class FormatAgentBase(BaseModel):
     user_request: str
     
 class FormatAgentResponse(BaseModel):
-    stat: str
-    html: str
-    css: str
+    code: str
