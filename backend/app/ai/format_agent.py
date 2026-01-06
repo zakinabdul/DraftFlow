@@ -26,7 +26,7 @@ print(f"API Key Found: {'Yes' if os.getenv('GROQ_API_KEY') else 'No'}")
 
 # llm client connection
 llm = ChatGroq(
-    model="openai/gpt-oss-120b",
+    model="llama-3.3-70b-versatile",
     streaming=True
     )
 

@@ -118,6 +118,7 @@ def serialize_float32(vector):
     """Helper to convert list of floats to binary format for SQLite"""
     return struct.pack(f"{len(vector)}f", *vector)
 
+
 class StyleRetriever:
     def __init__(self):
         self.embedder = GeminiEmbedding()
