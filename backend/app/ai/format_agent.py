@@ -12,7 +12,6 @@ from langsmith import traceable
 from app.db.style_db import StyleRetriever
 from langgraph.checkpoint.memory import InMemorySaver
 
-
 # 1. Get the path to the current file (program.py)
 current_file_path = Path(__file__).resolve()
 project_root = current_file_path.parent.parent.parent
@@ -429,13 +428,13 @@ async def format_graph(raw_text: str, user_query:str):
     # 3. Run the Graph
     print("🚀 Starting the Agent...")
     final_state = await app.ainvoke(initial_inputs, config=config) # type: ignore
+    return {
+       "code": final_state['merged_code']
+    }
 
     """# removing \n from the response
     final_state["html_code"] = final_state["html_code"].replace("\n", "")
     final_state["css_code"] = final_state["css_code"].replace("\n", "")"""
-    return {
-       "code": final_state['merged_code']
-    }
     """return {
         "stat": final_state['validation_status'],
         "html": final_state['html_code'],
