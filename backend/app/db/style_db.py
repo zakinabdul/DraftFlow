@@ -33,6 +33,53 @@ print(f"Loading env from: {env_path}")
 print(f"API Key Found: {'Yes' if os.getenv('GOOGLE_API_KEY') else 'No'}")
 
 # --- TEMPLATES ---
+
+# --- MODERN STYLE TEMPLATES ---
+# These are designed to work with TipTap (Frontend) and Pandoc (Backend)
+MODERN_STYLE_TEMPLATES = [
+    {
+        "id": 1,
+        "name": "Academic Standard",
+        "category": "Academic",
+        # Used by TipTap wrapper to style the editor area
+        "preview_class": "theme-academic", 
+        "description": "Standard university format, Times New Roman, 12pt.",
+        # Configuration for the Pandoc engine on export
+        "export_config": {
+            "engine": "xelatex",
+            "mainfont": "Times New Roman",
+            "fontsize": "12pt",
+            "geometry": "margin=1in",
+            "toc": False
+        }
+    },
+    {
+        "id": 4,
+        "name": "IEEE Research Paper",
+        "category": "Professional",
+        "preview_class": "theme-ieee",
+        "description": "Two-column technical format with LaTeX math support.",
+        "export_config": {
+            "engine": "pdflatex",
+            "template": "ieee_template.tex", # You store this .tex file on your FastAPI server
+            "columns": 2,
+            "math": "katex"
+        }
+    },
+    {
+        "id": 2,
+        "name": "College Project Report",
+        "category": "Educational",
+        "preview_class": "theme-college-report",
+        "description": "Includes Cover Page and Table of Contents.",
+        "export_config": {
+            "engine": "xelatex",
+            "toc": True,
+            "template": "college_report_v2.tex",
+            "metadata_fields": ["college_name", "department", "guide_name"]
+        }
+    }
+]
 STYLE_TEMPLATES = [
     {
         "id": 1,
@@ -80,9 +127,10 @@ STYLE_TEMPLATES = [
 
 # --- GEMINI WRAPPER ---
 class GeminiEmbedding:
-    def __init__(self, model_name: str = "models/text-embedding-004"):
+    def __init__(self, model_name: str ="gemini-embedding-001"):
         self.model_name = model_name
         self.client = genai.Client(api_key=os.environ.get("GOOGLE_API_KEY")) # type: ignore
+
 
     def embed_documents(self, texts: List[str]) -> List[List[float]]:
         # NEW METHOD CALL:
@@ -118,6 +166,10 @@ def serialize_float32(vector):
     """Helper to convert list of floats to binary format for SQLite"""
     return struct.pack(f"{len(vector)}f", *vector)
 
+import sqlite3
+import sqlite_vec
+from typing import Optional, Tuple, Dict
+# Assuming serialize_float32 is imported from your utils
 
 class StyleRetriever:
     def __init__(self):
@@ -130,15 +182,16 @@ class StyleRetriever:
         self.db.enable_load_extension(False)
         
         # 1. Create Virtual Table
-        # Gemini text-embedding-004 uses 768 dimensions (not 1536)
+        # We replace +css and +html with metadata for the new engine
         self.db.execute("""
             CREATE VIRTUAL TABLE styles USING vec0(
                 id INTEGER PRIMARY KEY,
-                embedding float[768],
+                embedding float[3072],
                 name TEXT,
                 description TEXT,
-                +css TEXT,
-                +html TEXT
+                +preview_class TEXT,      -- Tailwind class for React Canvas
+                +tex_template_path TEXT,  -- Path to the .tex file on disk
+                +export_engine TEXT       -- 'xelatex' or 'pdflatex'
             )
         """)
         
@@ -146,59 +199,60 @@ class StyleRetriever:
         self._populate_initial_data()
 
     def _populate_initial_data(self):
-        print("Populating database with styles...")
+        print("Populating database with modern styles...")
         
-        # Prepare text for embedding (Name + Description)
-        descriptions = [f"{t['name']}. {t['description']}" for t in STYLE_TEMPLATES]
-        
-        # Batch embed using Gemini
-        # Note: 'embed_content' accepts a list of strings for batching
+        descriptions = [f"{t['name']}. {t['description']}" for t in MODERN_STYLE_TEMPLATES]
         embeddings = self.embedder.embed_documents(descriptions)
 
-        # Insert into SQLite
-        for i, template in enumerate(STYLE_TEMPLATES):
+        for i, template in enumerate(MODERN_STYLE_TEMPLATES):
             vector = embeddings[i]
             
-            # Minify CSS (remove newlines) for cleaner storage
-            clean_css = template["css"].replace("\n", "").strip()
-            
+            # Note: We extract export_config details to the flat SQLite columns
             self.db.execute(
-                "INSERT INTO styles(id, embedding, name, description, css, html) VALUES (?, ?, ?, ?, ?, ?)",
+                """INSERT INTO styles(
+                    id, embedding, name, description, 
+                    preview_class, tex_template_path, export_engine
+                ) VALUES (?, ?, ?, ?, ?, ?, ?)""",
                 (
                     template["id"],
                     serialize_float32(vector),
                     template["name"],
                     template["description"],
-                    clean_css,
-                    template["html"]
+                    template["preview_class"],
+                    template["export_config"].get("template", "default.tex"),
+                    template["export_config"].get("engine", "xelatex")
                 )
             )
-        print(f"Successfully populated {len(STYLE_TEMPLATES)} styles.")
+        print(f"Successfully populated {len(MODERN_STYLE_TEMPLATES)} styles.")
 
-    def search_style_name(self, user_query, limit=1):
+    def search_style(self, user_query: str) -> Dict:
+        """
+        Performs vector search and returns the full theme configuration.
+        """
         # 1. Embed user query
         query_vector = self.embedder.embed_query(user_query)
         
-        # 2. Perform Vector Search
+        # 2. Perform Vector Search to get the ID/Name
         cursor = self.db.execute("""
-            SELECT name, distance
+            SELECT id, name, preview_class, tex_template_path, export_engine, distance
             FROM styles
             WHERE embedding MATCH ?
-            AND k = ?
+            AND k = 1
             ORDER BY distance
-        """, (serialize_float32(query_vector), limit))
+        """, (serialize_float32(query_vector),))
         
-        return cursor.fetchone()
-    
-    def search_css_html(self, name):
-    # No vector search needed. Just a standard DB lookup.
-        cursor = self.db.execute("""
-            SELECT css, html
-            FROM styles
-            WHERE name = ?
-        """, (name,))  # Pass 'name' as a tuple
+        row = cursor.fetchone()
         
-        return cursor.fetchone()
+        if row:
+            return {
+                "id": row[0],
+                "name": row[1],
+                "preview_class": row[2],
+                "tex_template_path": row[3],
+                "export_engine": row[4],
+                "distance": row[5]
+            }
+        return {}
 
 
 # --- USAGE EXAMPLE ---

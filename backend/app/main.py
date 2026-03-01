@@ -3,8 +3,10 @@ from app.api.v2 import api_router
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.v2.agents import groq_rate_limit_handler
 from groq import RateLimitError
-app = FastAPI()
+from contextlib import asynccontextmanager
 
+
+app = FastAPI()
 @app.get("/")
 def index_mesg():
     return {

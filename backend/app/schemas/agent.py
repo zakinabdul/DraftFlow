@@ -1,8 +1,8 @@
 from pydantic import BaseModel
-
 class FormatAgentBase(BaseModel):
     raw_text: str
     user_request: str
-    
 class FormatAgentResponse(BaseModel):
-    code: str
+    markdown_content: str
+    selected_theme: str
+    latex_content: str

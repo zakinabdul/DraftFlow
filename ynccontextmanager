@@ -1,0 +1,232 @@
+[33mcommit 21736ca12aa563173d4b667f80fb232cd4a5b6a3[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeat/p2-raw-to-latex[m[33m, [m[1;31morigin/feat/raw-text-to-html-agent[m[33m, [m[1;31morigin/feat/p2-raw-to-latex[m[33m, [m[1;31morigin/feat/editor-canvas[m[33m, [m[1;31morigin/backend[m[33m, [m[1;32mfeat/raw-text-to-html-agent[m[33m, [m[1;32mfeat/editor-canvas[m[33m, [m[1;32mbackend[m[33m)[m
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Fri Feb 6 17:49:10 2026 +0000
+
+    Enhance: Add Groq rate limit handler and improve format_agent endpoint
+
+[33mcommit 3a33b6322b9b18936a315322491b4e70495814da[m
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Fri Feb 6 17:48:22 2026 +0000
+
+    Updated Styles
+
+[33mcommit 73ded940942b0d40a54e2e80e9014e0514093454[m
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Tue Jan 6 16:14:44 2026 +0000
+
+    Fix: Update  the groq model
+
+[33mcommit 6a64a28ed57f2f5a691d0b6588fb6924646d4214[m
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Sat Jan 3 04:11:01 2026 +0000
+
+    Fix: Add Functionalities to Merge html and css code and improved the response
+
+[33mcommit ea7558b7a29b748a123d9a7eb7e653f33dc11795[m
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Fri Jan 2 15:41:53 2026 +0000
+
+    .
+
+[33mcommit c289ed600952a550672c229dc3a854e58bd45972[m
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Tue Dec 30 16:33:04 2025 +0000
+
+    Add CORS middleware to FastAPI application for cross-origin requests
+
+[33mcommit 4b5ab4ec6fb9a88e40b3db9a632a84969b6b2a65[m
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Tue Dec 30 16:23:47 2025 +0000
+
+    Replace deprecated 'google-generativeai' with 'google-genai' and add fallback import handling
+
+[33mcommit ea6ca6225987748ad51b78ce975ca74f2a40ad87[m
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Tue Dec 30 16:16:54 2025 +0000
+
+    Update Dockerfile to copy only the backend folder for correct import structure
+
+[33mcommit f338a201dcacde618196ed8a3472b7a272840c9d[m
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Tue Dec 30 16:10:41 2025 +0000
+
+    updated the dockerfile
+
+[33mcommit d4d1d8f672e751d1b1ad0a7a95e1d321cc596c6b[m
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Tue Dec 30 15:58:19 2025 +0000
+
+    updated
+
+[33mcommit 5f29674abcddd943d115cc6f2a67da4ef03bd849[m
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Tue Dec 30 15:56:32 2025 +0000
+
+    updated
+
+[33mcommit 7430ea3b6ac69453955a539af1571e1399348581[m
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Tue Dec 30 15:45:04 2025 +0000
+
+    Refactor Dockerfile for improved clarity and organization
+
+[33mcommit 6150d3e94b7d64d09868de5b98a2897d4c8c7633[m
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Tue Dec 30 15:19:09 2025 +0000
+
+    add
+
+[33mcommit da389bcd1bb56ecd5097da9d56d2881ec167d0c4[m
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Tue Dec 30 15:18:49 2025 +0000
+
+    updated
+
+[33mcommit b781258d31edd3942588d776f74bb96d54e789a5[m
+Merge: 0bfce87 fe388a8
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Tue Dec 30 20:40:01 2025 +0530
+
+    Merge branch 'feat/raw-text-to-html-agent' into backend
+
+[33mcommit fe388a84c3e13c4e6590eb541f83bbeb0122661b[m
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Tue Dec 30 20:39:39 2025 +0530
+
+    Fix Dockerfile to correctly copy requirements.txt from the backend directory
+
+[33mcommit 0bfce87c5694f6d8d5ae02a9c6a11ac2b59ebbf7[m
+Merge: 033392b 8a07945
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Tue Dec 30 15:05:46 2025 +0000
+
+    Merge branch 'feat/raw-text-to-html-agent' into backend
+
+[33mcommit 8a079457d06de763c64c823d6a891bf15ead3d51[m
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Tue Dec 30 20:33:34 2025 +0530
+
+    add
+
+[33mcommit 7d0f5e1c4da10d6430052901d0ed8f937cc67f9a[m
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Tue Dec 30 20:33:28 2025 +0530
+
+    add Production ready dockerfile
+
+[33mcommit 033392b356efdf3411076c729058803a907c1716[m
+Merge: 44fc77f bb358a7
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Thu Dec 25 16:19:37 2025 +0000
+
+    Merge branch 'feat/raw-text-to-html-agent' into backend
+
+[33mcommit bb358a775c7cf04a93c339082947a2107ea3facd[m
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Thu Dec 25 16:12:48 2025 +0000
+
+    Add style database and embedding functionality with Gemini API integration
+
+[33mcommit 83242b6abcef80b0b20ef706789362c4d21ad6df[m
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Thu Dec 25 16:11:38 2025 +0000
+
+    Refactor FormatAgentBase to replace doc_type with user_request for improved clarity
+
+[33mcommit bdeb40016b3c18604a05448b8b0175aafb75c81b[m
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Thu Dec 25 16:11:15 2025 +0000
+
+    Refactor format_agent_graph to use user_query instead of doc_type for improved clarity
+
+[33mcommit d7b319b8fdc981da541a6e4e59ec7046ec8a33af[m
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Thu Dec 25 16:10:14 2025 +0000
+
+    Refactor format_agent.py for improved structure and add style retrieval functionality; update requirements.txt with new dependencies
+
+[33mcommit 44fc77f8d028d0acd9a468fe8fdcbca83f0b8ec4[m
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Thu Dec 25 15:48:43 2025 +0000
+
+    Update .gitignore to include algorithm.md and retain Trial directory
+
+[33mcommit 3f0b4391913e51666f191a2d9d759263ce814f41[m
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Thu Dec 18 15:41:16 2025 +0000
+
+    Implement raw text to HTML conversion agent with API integration
+
+[33mcommit fd5a5e3526eb40e21e87467c796ce95bed12406a[m
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Sun Dec 14 03:26:22 2025 +0000
+
+    Add container environment variables to remove Wayland display support
+
+[33mcommit 90d375511f8d7f3b7822a988a3016eb441238fab[m
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Thu Dec 11 17:05:17 2025 +0000
+
+    Add initial configuration and main application setup
+
+[33mcommit a91db0cebc5edf51ba36059ea25cb242b50cb926[m
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Wed Dec 10 16:38:06 2025 +0000
+
+    Slight change
+
+[33mcommit c452dafaf676f252c666c44102a0f2d63953cb22[m
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Wed Dec 10 16:33:30 2025 +0000
+
+    Initial commit: Setup backend project structure and Dev Container
+
+[33mcommit e3f2298e8b4d3562df0eccc1a2689ec7e3f79351[m
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Wed Dec 10 21:35:23 2025 +0530
+
+    "Add backend Ci workflow"
+
+[33mcommit ec7614baa18245b68cfadccfb4ab6ab07f66c17f[m[33m ([m[1;32mmain[m[33m)[m
+Author: zakinabdul <zakinabdul.tech@gmail.com>
+Date:   Sat Dec 6 14:29:55 2025 +0530
+
+    Initialize structure for V2 (React + Backend)
+
+[33mcommit e3f89f8e370c961f5b317cec6856361b021c1015[m[33m ([m[1;33mtag: [m[1;33mv1.0.0[m[33m, [m[1;31morigin/v1-legacy[m[33m, [m[1;32mv1-legacy[m[33m)[m
+Merge: 22184da da65dea
+Author: Zakin Abdul Rahman <123785321+ZakisCodes@users.noreply.github.com>
+Date:   Sun Jun 29 21:18:57 2025 +0530
+
+    Merge pull request #20 from ZakisCodes/dev
+    
+    Refactor editor.html: Clean up whitespace and update script source to…
+
+[33mcommit da65deaa76d59ad06096a56e924b5036b87612e6[m[33m ([m[1;31morigin/dev[m[33m)[m
+Author: ZakisCodes <zakinabdul.tech@gmail.com>
+Date:   Sun Jun 29 15:48:15 2025 +0000
+
+    Refactor editor.html: Clean up whitespace and update script source to script2.js
+
+[33mcommit 22184dac09830c7c05e714e7fd3b323c482fdd12[m
+Merge: b2d1b06 e785361
+Author: Zakin Abdul Rahman <123785321+ZakisCodes@users.noreply.github.com>
+Date:   Sun Jun 29 21:08:45 2025 +0530
+
+    Merge pull request #19 from ZakisCodes/dev
+    
+    Dev
+
+[33mcommit e7853617eed765bc53068ca59195f39d372b41dc[m
+Merge: 2d09a3b 3e3f9b2
+Author: ZakisCodes <zakinabdul.tech@gmail.com>
+Date:   Sun Jun 29 15:30:41 2025 +0000
+
+    Merge branch 'dev' of https://github.com/ZakisCodes/DraftFlow into dev
+
+[33mcommit 2d09a3be375182b5071d13d0dabc3170a2a42fed[m
+Author: ZakisCodes <zakinabdul.tech@gmail.com>
+Date:   Sun Jun 29 15:27:50 2025 +0000
+
+    Add wss for HTTPS protocol
+

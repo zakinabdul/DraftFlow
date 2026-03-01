@@ -1,0 +1,46 @@
+\documentclass[11pt,a4paper]{article}
+
+% --- Essential Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry} % For margins
+\usepackage{amsmath, amssymb} % For LaTeX Math
+\usepackage{graphicx} % For images
+\usepackage{hyperref} % For clickable links/TOC
+\usepackage{titlesec} % For custom heading styles
+\usepackage{booktabs} % For professional tables
+\usepackage{setspace} % For line spacing
+
+% --- Layout Configuration ---
+\geometry{margin=2.5cm}
+\onehalfspacing
+\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=cyan}
+
+% --- Custom Variables (Placeholders for your Python script) ---
+\title{{{TITLE}}}
+\author{{{AUTHOR}}}
+\date{\today}
+
+\begin{document}
+
+% --- Cover Page ---
+\maketitle
+\begin{abstract}
+{{ABSTRACT}}
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+
+% --- Main Content ---
+% This is where your AI-generated Markdown/LaTeX content will be injected
+{{CONTENT}}
+
+% --- References ---
+\newpage
+\begin{thebibliography}{99}
+{{REFERENCES}}
+\end{thebibliography}
+
+\end{document}
